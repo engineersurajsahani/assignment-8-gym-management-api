@@ -1,4 +1,10 @@
 # 🏋️‍♂️ Assignment 08: Gym & Fitness Club Management REST API
+
+---
+
+## 🌐 Live Production Deployment on Render
+- **Live Production URL:** [https://assignmentsexpressjsmongodbsupabasefireb.onrender.com](https://assignmentsexpressjsmongodbsupabasefireb.onrender.com)
+
 > **Track:** Backend Development | **Level:** Beginner to Intermediate | **Estimated Time:** 5–7 Hours  
 > **Tech Stack:** Node.js, Express.js, MongoDB, Mongoose, Passport.js (Local Strategy), Express-Session, dotenv
 
