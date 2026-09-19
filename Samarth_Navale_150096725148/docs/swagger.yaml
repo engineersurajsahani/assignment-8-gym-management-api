@@ -1,0 +1,266 @@
+openapi: 3.0.3
+info:
+  title: Gym & Fitness Club Management REST API
+  description: |
+    A RESTful API for Gym & Fitness Club Management System built with Node.js, Express.js, MongoDB, Mongoose, and Passport.js.
+    
+    ### Author:
+    - **Name:** Samarth Navale
+    - **Roll No:** 150096725148
+    - **Cohort:** Sam Altman
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Local Server
+  - url: https://samarth-assignment-8-gym-management-api.vercel.app
+    description: Vercel Production
+  - url: https://samarth-assignment-8-gym-management-api.onrender.com
+    description: Render Production
+
+tags:
+  - name: Authentication
+    description: Member registration, login, logout, and profile
+  - name: Fitness Classes
+    description: Workout classes, scheduling, and capacity bookings
+  - name: Memberships
+    description: Membership renewals and expired member queries
+
+paths:
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  example: fit_sam
+                email:
+                  type: string
+                  example: sam@fit.com
+                password:
+                  type: string
+                  example: mypassword
+                membershipTier:
+                  type: string
+                  enum: [Bronze, Silver, Gold, Platinum]
+                  example: Gold
+                durationMonths:
+                  type: integer
+                  example: 3
+                emergencyContact:
+                  type: string
+                  example: "+1234567890"
+      responses:
+        '201':
+          description: Member registered successfully
+        '400':
+          description: Validation error or user exists
+
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: fit_sam
+                password:
+                  type: string
+                  example: mypassword
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Invalid credentials
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout member
+      responses:
+        '200':
+          description: Logged out successfully
+
+  /api/auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get active member profile with remaining days
+      responses:
+        '200':
+          description: Member profile details
+        '401':
+          description: Unauthorized
+
+  /api/classes:
+    get:
+      tags:
+        - Fitness Classes
+      summary: Fetch upcoming classes
+      parameters:
+        - name: trainer
+          in: query
+          schema:
+            type: string
+            example: Maria
+      responses:
+        '200':
+          description: List of fitness classes
+    post:
+      tags:
+        - Fitness Classes
+      summary: Create workout class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - trainerName
+                - scheduleDate
+                - maxCapacity
+              properties:
+                title:
+                  type: string
+                  example: Zumba Cardio
+                trainerName:
+                  type: string
+                  example: Maria
+                scheduleDate:
+                  type: string
+                  format: date-time
+                  example: '2026-04-15T09:00:00.000Z'
+                durationMinutes:
+                  type: integer
+                  example: 60
+                maxCapacity:
+                  type: integer
+                  example: 20
+      responses:
+        '201':
+          description: Class created successfully
+        '400':
+          description: Validation error
+
+  /api/classes/{id}:
+    get:
+      tags:
+        - Fitness Classes
+      summary: Get class details with enrolled members
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Class details
+        '404':
+          description: Class not found
+
+  /api/classes/{id}/book:
+    post:
+      tags:
+        - Fitness Classes
+      summary: Enroll logged-in user in class
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Enrolled successfully
+        '400':
+          description: Class full, already enrolled, or membership expired
+        '401':
+          description: Unauthorized
+        '404':
+          description: Class not found
+
+  /api/classes/{id}/cancel:
+    delete:
+      tags:
+        - Fitness Classes
+      summary: Cancel member booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Booking cancelled
+        '400':
+          description: Not enrolled in class
+        '401':
+          description: Unauthorized
+        '404':
+          description: Class not found
+
+  /api/members/expired:
+    get:
+      tags:
+        - Memberships
+      summary: Get all expired memberships
+      responses:
+        '200':
+          description: List of expired members
+
+  /api/members/{id}/renew:
+    patch:
+      tags:
+        - Memberships
+      summary: Renew or extend membership
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                additionalMonths:
+                  type: integer
+                  example: 6
+                tier:
+                  type: string
+                  enum: [Bronze, Silver, Gold, Platinum]
+                  example: Platinum
+      responses:
+        '200':
+          description: Membership renewed
+        '404':
+          description: Member not found
