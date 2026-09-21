@@ -1,0 +1,11 @@
+### Register a new user
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "ashutosh",
+  "email": "ash@shop.com",
+  "password": "password123",
+  "membershipTier": "Bronze",
+  "emergencyContact": "9999999999"
+}
