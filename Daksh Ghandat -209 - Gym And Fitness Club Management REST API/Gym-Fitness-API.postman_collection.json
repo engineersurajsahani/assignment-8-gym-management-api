@@ -1,0 +1,327 @@
+{
+  "info": {
+    "_postman_id": "e76f4c1f-1a5b-4a71-9c1e-gym08a0",
+    "name": "Gym-Fitness-API",
+    "description": "Assignment 08 - Gym & Fitness Club Management REST API. Session-based auth with Passport Local Strategy (no JWT). Create an environment variable baseUrl = http://localhost:3000",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Register Member",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+              "pm.test('Has message', function () { pm.expect(pm.response.json().message).to.eql('Member registered successfully'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"fit_sam\",\n    \"email\": \"sam@fit.com\",\n    \"password\": \"mypassword\",\n    \"membershipTier\": \"Gold\",\n    \"durationMonths\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "register"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "2. Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Login message', function () { pm.expect(pm.response.json().message).to.eql('Login successful'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"fit_sam\",\n    \"password\": \"mypassword\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "3. Get Current Member",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Has user and remainingDays', function () { var j = pm.response.json(); pm.expect(j.user).to.exist; pm.expect(j.remainingDays).to.be.a('number'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "me"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "4. Create Class",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 201', function () { pm.response.to.have.status(201); });",
+              "pm.test('Save class id', function () { pm.environment.set('classId', pm.response.json()._id); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"HIIT Bootcamp\",\n    \"trainerName\": \"John\",\n    \"scheduleDate\": \"2026-12-15T09:00:00Z\",\n    \"durationMinutes\": 60,\n    \"maxCapacity\": 2\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/classes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "classes"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "5. Get Classes",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Has count', function () { pm.expect(pm.response.json().count).to.be.a('number'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/classes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "classes"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "6. Get Class By ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Has enrolledMembers', function () { pm.expect(pm.response.json().enrolledMembers).to.exist; });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/classes/{{classId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "classes", "{{classId}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "7. Book Class",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Booking message', function () { pm.expect(pm.response.json().message).to.eql('Class booked successfully'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/classes/{{classId}}/book",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "classes", "{{classId}}", "book"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "8. Cancel Booking",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Cancel message', function () { pm.expect(pm.response.json().message).to.eql('Class booking cancelled successfully'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/classes/{{classId}}/cancel",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "classes", "{{classId}}", "cancel"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "9. Renew Membership",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Has renewed member', function () { var j = pm.response.json(); pm.expect(j.member.membershipTier).to.eql('Platinum'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"additionalMonths\": 6,\n    \"tier\": \"Platinum\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/members/{{memberId}}/renew",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "members", "{{memberId}}", "renew"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "10. Get Expired Members",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Has count and members', function () { var j = pm.response.json(); pm.expect(j.count).to.be.a('number'); pm.expect(j.members).to.be.an('array'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/members/expired",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "members", "expired"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "11. Logout",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Logout message', function () { pm.expect(pm.response.json().message).to.eql('Logout successful'); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/logout",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "logout"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ]
+}

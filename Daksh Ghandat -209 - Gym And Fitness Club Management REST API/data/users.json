@@ -1,0 +1,30 @@
+[
+  {
+    "username": "fit_sam",
+    "email": "sam@fit.com",
+    "password": "mypassword",
+    "membershipTier": "Gold",
+    "durationMonths": 3
+  },
+  {
+    "username": "muscle_man",
+    "email": "muscle@fit.com",
+    "password": "mypassword",
+    "membershipTier": "Platinum",
+    "durationMonths": 6
+  },
+  {
+    "username": "yoga_amy",
+    "email": "amy@fit.com",
+    "password": "mypassword",
+    "membershipTier": "Bronze",
+    "durationMonths": 1
+  },
+  {
+    "username": "runner_raj",
+    "email": "raj@fit.com",
+    "password": "mypassword",
+    "membershipTier": "Silver",
+    "durationMonths": 2
+  }
+]
