@@ -1,0 +1,30 @@
+[
+  {
+    "title": "HIIT Bootcamp",
+    "trainerName": "John",
+    "scheduleDate": "2026-12-15T09:00:00Z",
+    "durationMinutes": 60,
+    "maxCapacity": 2
+  },
+  {
+    "title": "Yoga Flow",
+    "trainerName": "Maria",
+    "scheduleDate": "2026-12-18T08:00:00Z",
+    "durationMinutes": 45,
+    "maxCapacity": 15
+  },
+  {
+    "title": "Zumba Cardio",
+    "trainerName": "Maria",
+    "scheduleDate": "2026-12-20T17:00:00Z",
+    "durationMinutes": 50,
+    "maxCapacity": 20
+  },
+  {
+    "title": "Strength & Conditioning",
+    "trainerName": "John",
+    "scheduleDate": "2027-01-05T10:00:00Z",
+    "durationMinutes": 90,
+    "maxCapacity": 12
+  }
+]

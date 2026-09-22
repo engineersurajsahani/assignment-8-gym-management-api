@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: itm-assignment-08-gym-api
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      # ---- Secrets (fill these in the Render dashboard after deploy) ----
+      - key: MONGODB_URI
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
+      # Comma-separated origins allowed to make browser requests.
+      - key: CLIENT_ORIGIN
+        sync: false
