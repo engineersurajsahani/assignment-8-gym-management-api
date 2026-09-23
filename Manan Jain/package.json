@@ -1,0 +1,35 @@
+{
+  "name": "gym-fitness-api",
+  "version": "1.0.0",
+  "description": "Gym & Fitness Club Management REST API using Node.js, Express, MongoDB Atlas, Mongoose, Passport.js Local Strategy, and Express Session",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "mongoose",
+    "passport",
+    "session",
+    "fitness",
+    "gym"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "mongoose": "^8.3.1",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
