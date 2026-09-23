@@ -1,0 +1,292 @@
+{
+  "info": {
+    "_postman_id": "893c5a84-8840-4228-9842-gym-fitness-api",
+    "name": "Gym & Fitness Club Management API",
+    "description": "Postman Collection for Gym & Fitness Club Management REST API with session-based authentication, class booking, and member lifecycle management.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001/api",
+      "type": "string"
+    },
+    {
+      "key": "classId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "memberId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "1. Register Member",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var json = pm.response.json();",
+                  "    if (json.data && json.data._id) {",
+                  "        pm.collectionVariables.set('memberId', json.data._id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"johndoe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password@123\",\n  \"membershipTier\": \"Gold\",\n  \"durationMonths\": 3,\n  \"emergencyContact\": \"+1-555-0199\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new member and calculate membership expiry date"
+          },
+          "response": []
+        },
+        {
+          "name": "2. Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"johndoe\",\n  \"password\": \"Password@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login with username and password; sets connect.sid session cookie"
+          },
+          "response": []
+        },
+        {
+          "name": "3. Get Profile (Me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Fetch authenticated user profile with computed remainingDays"
+          },
+          "response": []
+        },
+        {
+          "name": "4. Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Destroy session and clear session cookie"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Classes",
+      "item": [
+        {
+          "name": "1. Create Class",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var json = pm.response.json();",
+                  "    if (json.data && json.data._id) {",
+                  "        pm.collectionVariables.set('classId', json.data._id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Morning HIIT Blast\",\n  \"trainerName\": \"Sarah Connor\",\n  \"scheduleDate\": \"2026-11-20T08:00:00.000Z\",\n  \"durationMinutes\": 45,\n  \"maxCapacity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/classes",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes"]
+            },
+            "description": "Create a new upcoming fitness class"
+          },
+          "response": []
+        },
+        {
+          "name": "2. Get Upcoming Classes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/classes?trainer=Sarah",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes"],
+              "query": [
+                {
+                  "key": "trainer",
+                  "value": "Sarah",
+                  "description": "Optional trainer name search"
+                }
+              ]
+            },
+            "description": "Fetch upcoming classes with populated enrolled members"
+          },
+          "response": []
+        },
+        {
+          "name": "3. Get Class By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/classes/{{classId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes", "{{classId}}"]
+            },
+            "description": "Fetch single class details and enrolled members"
+          },
+          "response": []
+        },
+        {
+          "name": "4. Book Class Spot",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/classes/{{classId}}/book",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes", "{{classId}}", "book"]
+            },
+            "description": "Enroll logged in user into the specified class"
+          },
+          "response": []
+        },
+        {
+          "name": "5. Cancel Class Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/classes/{{classId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["classes", "{{classId}}", "cancel"]
+            },
+            "description": "Remove logged in user from class enrollment list"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Members",
+      "item": [
+        {
+          "name": "1. Get All Members",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/members?tier=Gold",
+              "host": ["{{baseUrl}}"],
+              "path": ["members"],
+              "query": [
+                {
+                  "key": "tier",
+                  "value": "Gold",
+                  "description": "Optional tier filter"
+                }
+              ]
+            },
+            "description": "Retrieve all gym members list"
+          },
+          "response": []
+        },
+        {
+          "name": "2. Get Expired Members (Self-Healing)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/members/expired",
+              "host": ["{{baseUrl}}"],
+              "path": ["members", "expired"]
+            },
+            "description": "Find all expired members and automatically heal their status to expired"
+          },
+          "response": []
+        },
+        {
+          "name": "3. Renew Membership",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"additionalMonths\": 6,\n  \"membershipTier\": \"Platinum\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/members/{{memberId}}/renew",
+              "host": ["{{baseUrl}}"],
+              "path": ["members", "{{memberId}}", "renew"]
+            },
+            "description": "Extend member expiry date from later of now/currentExpiry and set status to active"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
