@@ -1,7 +1,7 @@
 # 🏋️‍♂️ Assignment 08: Gym & Fitness Club Management REST API
 > **Track:** Backend Development | **Level:** Beginner to Intermediate | **Estimated Time:** 5–7 Hours  
 > **Tech Stack:** Node.js, Express.js, MongoDB, Mongoose, Passport.js (Local Strategy), Express-Session, dotenv
-
+Live Link: https://assignment-8-gym-management-api-03gy.onrender.com
 ---
 
 ## 📌 1. Objective & Overview
