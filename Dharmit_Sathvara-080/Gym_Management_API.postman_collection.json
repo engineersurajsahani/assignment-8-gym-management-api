@@ -1,0 +1,69 @@
+{
+  "info": {
+    "name": "Gym Management API - Assignment 08",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "memberId", "value": "" },
+    { "key": "classId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"fit_sam\",\n  \"email\": \"sam@fit.com\",\n  \"password\": \"mypassword\",\n  \"membershipTier\": \"Gold\",\n  \"durationMonths\": 3\n}" },
+        "url": "{{baseUrl}}/api/auth/register"
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"fit_sam\",\n  \"password\": \"mypassword\"\n}" },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "My Profile",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/auth/me" }
+    },
+    {
+      "name": "Create Class",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"title\": \"Zumba Cardio\",\n  \"trainerName\": \"Maria\",\n  \"scheduleDate\": \"2027-04-15T09:00:00Z\",\n  \"durationMinutes\": 60,\n  \"maxCapacity\": 2\n}" },
+        "url": "{{baseUrl}}/api/classes"
+      }
+    },
+    {
+      "name": "Get Upcoming Classes",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/classes" }
+    },
+    {
+      "name": "Book Class",
+      "request": { "method": "POST", "url": "{{baseUrl}}/api/classes/{{classId}}/book" }
+    },
+    {
+      "name": "Cancel Booking",
+      "request": { "method": "DELETE", "url": "{{baseUrl}}/api/classes/{{classId}}/cancel" }
+    },
+    {
+      "name": "Renew Membership",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"additionalMonths\": 6,\n  \"tier\": \"Platinum\"\n}" },
+        "url": "{{baseUrl}}/api/members/{{memberId}}/renew"
+      }
+    },
+    {
+      "name": "Expired Members",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/members/expired" }
+    }
+  ]
+}
