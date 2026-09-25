@@ -5,6 +5,10 @@
 > **Tech Stack:** Node.js, Express.js, MongoDB (Mongoose), Passport.js (Local Strategy), Express-Session, bcryptjs  
 
 ---
+## 🔗 Live Link:
+https://pari-gothi-assignment-8-gym-management.onrender.com
+
+---
 
 ## 📌 Project Overview
 
