@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Class Form</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="app.js"></script>
+  </head>
+  <body>
+    <h1 id="heading">Add Class</h1>
+
+    <div>
+      <label for="title">Title : </label>
+      <input type="text" id="title" />
+    </div>
+
+    <div>
+      <label for="trainerName">Trainer : </label>
+      <input type="text" id="trainerName" />
+    </div>
+
+    <div>
+      <label for="scheduleDate">Date and Time : </label>
+      <input type="datetime-local" id="scheduleDate" />
+    </div>
+
+    <div>
+      <label for="durationMinutes">Duration (minutes) : </label>
+      <input type="number" id="durationMinutes" min="1" value="60" />
+    </div>
+
+    <div>
+      <label for="maxCapacity">Max Capacity : </label>
+      <input type="number" id="maxCapacity" min="1" />
+    </div>
+
+    <br />
+
+    <div>
+      <button onclick="handleSubmit()">Save</button>
+      <button onclick="location.href = 'index.html'">Back</button>
+    </div>
+
+    <script>
+      const classId = new URLSearchParams(location.search).get("id");
+
+      function toLocalInput(value) {
+        const date = new Date(value);
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        return date.toISOString().slice(0, 16);
+      }
+
+      function loadClass() {
+        callApi(`/classes/${classId}`)
+          .then(({ response, data }) => {
+            if (response.status !== 200) {
+              showError(data.message || "could not load class!");
+              return;
+            }
+            const fitnessClass = data.class;
+            document.getElementById("title").value = fitnessClass.title;
+            document.getElementById("trainerName").value = fitnessClass.trainerName;
+            document.getElementById("scheduleDate").value = toLocalInput(fitnessClass.scheduleDate);
+            document.getElementById("durationMinutes").value = fitnessClass.durationMinutes;
+            document.getElementById("maxCapacity").value = fitnessClass.maxCapacity;
+          })
+          .catch((error) => {
+            console.log(error);
+            showError("could not reach the server!");
+          });
+      }
+
+      function handleSubmit() {
+        const dateValue = document.getElementById("scheduleDate").value;
+        const body = {
+          title: document.getElementById("title").value,
+          trainerName: document.getElementById("trainerName").value,
+          scheduleDate: dateValue ? new Date(dateValue).toISOString() : "",
+          durationMinutes: Number(document.getElementById("durationMinutes").value),
+          maxCapacity: Number(document.getElementById("maxCapacity").value),
+        };
+
+        const path = classId ? `/classes/${classId}` : "/classes";
+        const method = classId ? "PUT" : "POST";
+
+        callApi(path, method, body)
+          .then(({ response, data }) => {
+            console.log(data);
+            if (handleUnauthorized(response, data)) return;
+
+            if (response.status === 200 || response.status === 201) {
+              showSuccess(classId ? "class updated" : "class added").then(() => {
+                location.href = "index.html";
+              });
+            } else {
+              showError(data.message || "Something went wrong!");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            showError("could not reach the server!");
+          });
+      }
+
+      getUser().then((user) => {
+        if (!user || user.role !== "admin") {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "this page is for admins only!",
+          }).then(() => {
+            location.href = "index.html";
+          });
+          return;
+        }
+        if (classId) {
+          document.getElementById("heading").textContent = "Edit Class";
+          loadClass();
+        }
+      });
+    </script>
+  </body>
+</html>

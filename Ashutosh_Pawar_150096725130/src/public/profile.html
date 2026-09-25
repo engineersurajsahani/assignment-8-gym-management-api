@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="app.js"></script>
+  </head>
+  <body>
+    <h1>My Profile</h1>
+
+    <div id="nav"></div>
+
+    <p>Username : <b id="username">-</b></p>
+    <p>Email : <b id="email">-</b></p>
+    <p>Tier : <b id="tier">-</b></p>
+    <p>Status : <b id="status">-</b></p>
+    <p>Expires On : <b id="expiry">-</b></p>
+    <p>Days Left : <b id="days">-</b></p>
+
+    <h3>Renew Membership</h3>
+
+    <div>
+      <label for="additionalMonths">Months : </label>
+      <input type="number" id="additionalMonths" min="1" max="24" value="1" />
+
+      <label for="tier-select">Tier : </label>
+      <select id="tier-select">
+        <option value="">Keep current</option>
+        <option value="Bronze">Bronze</option>
+        <option value="Silver">Silver</option>
+        <option value="Gold">Gold</option>
+        <option value="Platinum">Platinum</option>
+      </select>
+
+      <button onclick="renew()">RENEW</button>
+    </div>
+
+    <h3>My Classes</h3>
+
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Trainer</th>
+          <th>Date</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody id="class-rows"></tbody>
+    </table>
+
+    <script>
+      let userId = null;
+
+      function loadProfile() {
+        callApi("/auth/me")
+          .then(({ response, data }) => {
+            console.log(data);
+            if (handleUnauthorized(response, data)) return;
+
+            const user = data.user;
+            userId = user._id;
+            renderNav(user);
+            document.getElementById("username").textContent = user.username;
+            document.getElementById("email").textContent = user.email;
+            document.getElementById("tier").textContent = user.membershipTier;
+            document.getElementById("status").textContent = user.membershipStatus;
+            document.getElementById("expiry").textContent = formatDate(user.membershipExpiryDate);
+            document.getElementById("days").textContent = data.remainingDays;
+          })
+          .catch((error) => {
+            console.log(error);
+            showError("could not load profile!");
+          });
+      }
+
+      function loadMyClasses() {
+        callApi("/classes/mine")
+          .then(({ response, data }) => {
+            if (response.status !== 200) return;
+
+            const rows = document.getElementById("class-rows");
+            rows.innerHTML = "";
+
+            if (data.classes.length === 0) {
+              rows.innerHTML = `<tr><td colspan="4">no bookings yet</td></tr>`;
+            }
+
+            data.classes.forEach((fitnessClass) => {
+              const tr = document.createElement("tr");
+              addCells(tr, [
+                fitnessClass.title,
+                fitnessClass.trainerName,
+                formatDate(fitnessClass.scheduleDate),
+              ]);
+              const td = document.createElement("td");
+              td.appendChild(
+                makeButton("CANCEL", () =>
+                  runAction(
+                    `/classes/${fitnessClass._id}/cancel`,
+                    "DELETE",
+                    "booking cancelled",
+                    loadMyClasses,
+                  ),
+                ),
+              );
+              tr.appendChild(td);
+              rows.appendChild(tr);
+            });
+          })
+          .catch((error) => console.log(error));
+      }
+
+      function renew() {
+        const body = {
+          additionalMonths: Number(document.getElementById("additionalMonths").value),
+        };
+        const tier = document.getElementById("tier-select").value;
+        if (tier) body.tier = tier;
+
+        callApi(`/members/${userId}/renew`, "PATCH", body)
+          .then(({ response, data }) => {
+            if (handleUnauthorized(response, data)) return;
+            if (response.status === 200) {
+              showSuccess(`renewed! ${data.remainingDays} days left`);
+              loadProfile();
+            } else {
+              showError(data.message || "could not renew!");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            showError("could not reach the server!");
+          });
+      }
+
+      loadProfile();
+      loadMyClasses();
+    </script>
+  </body>
+</html>

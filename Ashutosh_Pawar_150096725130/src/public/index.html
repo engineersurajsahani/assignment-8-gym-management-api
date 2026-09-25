@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gym Classes</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="app.js"></script>
+  </head>
+  <body>
+    <h1>Gym and Fitness Club</h1>
+
+    <div id="nav"></div>
+
+    <br />
+
+    <div>
+      <label for="trainer">Trainer : </label>
+      <input type="text" id="trainer" placeholder="e.g. John" />
+      <button onclick="loadClasses()">SEARCH</button>
+      <button onclick="clearFilter()">SHOW ALL</button>
+      <span id="count"></span>
+    </div>
+
+    <br />
+
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Trainer</th>
+          <th>Date</th>
+          <th>Duration</th>
+          <th>Seats Left</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody id="class-rows"></tbody>
+    </table>
+
+    <script>
+      let user = null;
+
+      function loadClasses() {
+        const trainer = document.getElementById("trainer").value.trim();
+        const query = trainer ? `?trainer=${encodeURIComponent(trainer)}` : "";
+
+        callApi(`/classes${query}`)
+          .then(({ response, data }) => {
+            console.log(data);
+
+            if (response.status !== 200) {
+              showError(data.message || "could not load classes!");
+              return;
+            }
+
+            document.getElementById("count").textContent = `${data.count} upcoming class(es)`;
+
+            const rows = document.getElementById("class-rows");
+            rows.innerHTML = "";
+
+            data.classes.forEach((fitnessClass) => {
+              const tr = document.createElement("tr");
+              const booked = user && fitnessClass.enrolledMembers.includes(user._id);
+
+              addCells(tr, [
+                fitnessClass.title,
+                fitnessClass.trainerName,
+                formatDate(fitnessClass.scheduleDate),
+                `${fitnessClass.durationMinutes} min`,
+                `${fitnessClass.seatsLeft} / ${fitnessClass.maxCapacity}`,
+              ]);
+
+              const td = document.createElement("td");
+              td.appendChild(
+                makeButton("VIEW", () => {
+                  location.href = `class.html?id=${fitnessClass._id}`;
+                }),
+              );
+
+              if (user) {
+                if (booked) {
+                  td.appendChild(makeButton("CANCEL", () => cancel(fitnessClass._id)));
+                } else {
+                  td.appendChild(
+                    makeButton("BOOK", () => book(fitnessClass._id), fitnessClass.seatsLeft <= 0),
+                  );
+                }
+              }
+
+              if (user && user.role === "admin") {
+                td.appendChild(
+                  makeButton("EDIT", () => {
+                    location.href = `class-form.html?id=${fitnessClass._id}`;
+                  }),
+                );
+                td.appendChild(makeButton("DELETE", () => remove(fitnessClass._id)));
+              }
+
+              tr.appendChild(td);
+              rows.appendChild(tr);
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            showError("could not reach the server!");
+          });
+      }
+
+      function clearFilter() {
+        document.getElementById("trainer").value = "";
+        loadClasses();
+      }
+
+      function book(id) {
+        runAction(`/classes/${id}/book`, "POST", "class booked!", loadClasses);
+      }
+
+      function cancel(id) {
+        runAction(`/classes/${id}/cancel`, "DELETE", "booking cancelled", loadClasses);
+      }
+
+      function remove(id) {
+        Swal.fire({
+          icon: "warning",
+          title: "Are you sure?",
+          text: "this class will be deleted",
+          showCancelButton: true,
+          confirmButtonText: "Yes, delete it",
+        }).then((result) => {
+          if (!result.isConfirmed) return;
+          runAction(`/classes/${id}`, "DELETE", "class deleted", loadClasses);
+        });
+      }
+
+      getUser().then((current) => {
+        user = current;
+        renderNav(user);
+        loadClasses();
+      });
+    </script>
+  </body>
+</html>

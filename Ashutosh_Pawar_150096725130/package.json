@@ -1,0 +1,28 @@
+{
+  "name": "ashutosh_pawar_150096725130",
+  "version": "1.0.0",
+  "description": "Gym and fitness club management API with MongoDB, Mongoose and Passport session auth",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "cd src && node server.js",
+    "dev": "cd src && nodemon server.js",
+    "make-admin": "node src/makeAdmin.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "mongoose": "^9.10.1",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="app.js"></script>
+  </head>
+  <body>
+    <h1>Register</h1>
+
+    <div>
+      <label for="username">Enter Username : </label>
+      <input type="text" id="username" />
+    </div>
+
+    <div>
+      <label for="email">Enter Email : </label>
+      <input type="email" id="email" />
+    </div>
+
+    <div>
+      <label for="password">Enter Password : </label>
+      <input type="password" id="password" />
+    </div>
+
+    <div>
+      <label for="membershipTier">Membership Tier : </label>
+      <select id="membershipTier">
+        <option value="Bronze">Bronze</option>
+        <option value="Silver">Silver</option>
+        <option value="Gold">Gold</option>
+        <option value="Platinum">Platinum</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="emergencyContact">Emergency Contact : </label>
+      <input type="text" id="emergencyContact" />
+    </div>
+
+    <div>
+      <label for="durationMonths">Duration (months) : </label>
+      <input type="number" id="durationMonths" min="1" max="24" value="1" />
+    </div>
+
+    <br />
+
+    <div>
+      <button onclick="handleSubmit()">Submit</button>
+      <button onclick="location.href = 'index.html'">Back</button>
+    </div>
+
+    <script>
+      function handleSubmit() {
+        const body = {
+          username: document.getElementById("username").value,
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value,
+          membershipTier: document.getElementById("membershipTier").value,
+          emergencyContact: document.getElementById("emergencyContact").value,
+          durationMonths: Number(document.getElementById("durationMonths").value),
+        };
+
+        callApi("/auth/register", "POST", body)
+          .then(({ response, data }) => {
+            console.log(data);
+
+            if (response.status === 201) {
+              showSuccess("registered! please login").then(() => {
+                location.href = "login.html";
+              });
+            } else {
+              showError(data.message || "Something went wrong!");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            showError("could not reach the server!");
+          });
+      }
+    </script>
+  </body>
+</html>
