@@ -3,9 +3,73 @@ POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-  "username": "ashutosh",
-  "email": "ash@shop.com",
+  "username": "sample re",
+  "email": "aashh@shajajaj.com",
   "password": "password123",
-  "membershipTier": "Bronze",
-  "emergencyContact": "9999999999"
+  "membershipTier": "Gold",
+  "emergencyContact": "9999999922"
 }
+
+### Login (username or email)
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "aashh@shajajaj.com",
+  "password": "password123"
+}
+
+### Profile and remaining days
+GET http://localhost:3000/api/auth/me
+
+### Upcoming classes, filter by trainer
+GET http://localhost:3000/api/classes?trainer=Maria
+
+### Class details with enrolled members
+GET http://localhost:3000/api/classes/PUT_CLASS_ID_HERE
+
+### Create a class (admin)
+POST http://localhost:3000/api/classes
+Content-Type: application/json
+
+{
+  "title": "Zumba Cardio",
+  "trainerName": "Maria",
+  "scheduleDate": "2030-04-15T09:00:00Z",
+  "maxCapacity": 2
+}
+
+### Update a class (admin)
+PUT http://localhost:3000/api/classes/PUT_CLASS_ID_HERE
+Content-Type: application/json
+
+{
+  "maxCapacity": 5
+}
+
+### Delete a class (admin)
+DELETE http://localhost:3000/api/classes/PUT_CLASS_ID_HERE
+
+### Book a class
+POST http://localhost:3000/api/classes/PUT_CLASS_ID_HERE/book
+
+### Cancel a booking
+DELETE http://localhost:3000/api/classes/PUT_CLASS_ID_HERE/cancel
+
+### My booked classes
+GET http://localhost:3000/api/classes/mine
+
+### Renew membership (own id, or any id as admin)
+PATCH http://localhost:3000/api/members/PUT_USER_ID_HERE/renew
+Content-Type: application/json
+
+{
+  "additionalMonths": 6,
+  "tier": "Platinum"
+}
+
+### Expired members (admin)
+GET http://localhost:3000/api/members/expired
+
+### Logout
+POST http://localhost:3000/api/auth/logout

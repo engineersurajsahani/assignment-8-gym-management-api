@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Class Details</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="app.js"></script>
+  </head>
+  <body>
+    <h1 id="heading">Class Details</h1>
+
+    <div id="nav"></div>
+
+    <p>Trainer : <b id="trainer">-</b></p>
+    <p>Date : <b id="date">-</b></p>
+    <p>Ends : <b id="end">-</b></p>
+    <p>Seats Left : <b id="seats">-</b></p>
+
+    <h3>Enrolled Members</h3>
+
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Tier</th>
+        </tr>
+      </thead>
+      <tbody id="member-rows"></tbody>
+    </table>
+
+    <script>
+      const classId = new URLSearchParams(location.search).get("id");
+
+      function loadClass() {
+        callApi(`/classes/${classId}`)
+          .then(({ response, data }) => {
+            console.log(data);
+
+            if (response.status !== 200) {
+              showError(data.message || "could not load class!");
+              return;
+            }
+
+            const fitnessClass = data.class;
+            document.getElementById("heading").textContent = fitnessClass.title;
+            document.getElementById("trainer").textContent = fitnessClass.trainerName;
+            document.getElementById("date").textContent = formatDate(fitnessClass.scheduleDate);
+            document.getElementById("end").textContent = formatDate(fitnessClass.endTime);
+            document.getElementById("seats").textContent =
+              `${fitnessClass.seatsLeft} / ${fitnessClass.maxCapacity}`;
+
+            const rows = document.getElementById("member-rows");
+            rows.innerHTML = "";
+
+            if (fitnessClass.enrolledMembers.length === 0) {
+              rows.innerHTML = `<tr><td colspan="2">no members yet</td></tr>`;
+            }
+
+            fitnessClass.enrolledMembers.forEach((member) => {
+              const tr = document.createElement("tr");
+              addCells(tr, [member.username, member.membershipTier]);
+              rows.appendChild(tr);
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            showError("could not reach the server!");
+          });
+      }
+
+      getUser().then((user) => {
+        renderNav(user);
+        loadClass();
+      });
+    </script>
+  </body>
+</html>

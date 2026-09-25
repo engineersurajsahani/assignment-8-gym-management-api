@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expired Members</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="app.js"></script>
+  </head>
+  <body>
+    <h1>Expired Members</h1>
+
+    <div id="nav"></div>
+
+    <br />
+
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Tier</th>
+          <th>Expired On</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody id="member-rows"></tbody>
+    </table>
+
+    <script>
+      function loadExpired() {
+        callApi("/members/expired")
+          .then(({ response, data }) => {
+            console.log(data);
+            if (handleUnauthorized(response, data)) return;
+
+            if (response.status !== 200) {
+              showError(data.message || "could not load members!");
+              return;
+            }
+
+            const rows = document.getElementById("member-rows");
+            rows.innerHTML = "";
+
+            if (data.members.length === 0) {
+              rows.innerHTML = `<tr><td colspan="5">no expired members</td></tr>`;
+            }
+
+            data.members.forEach((member) => {
+              const tr = document.createElement("tr");
+              addCells(tr, [
+                member.username,
+                member.email,
+                member.membershipTier,
+                formatDate(member.membershipExpiryDate),
+              ]);
+              const td = document.createElement("td");
+              td.appendChild(makeButton("RENEW 1 MONTH", () => renew(member._id)));
+              tr.appendChild(td);
+              rows.appendChild(tr);
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            showError("could not reach the server!");
+          });
+      }
+
+      function renew(id) {
+        callApi(`/members/${id}/renew`, "PATCH", { additionalMonths: 1 })
+          .then(({ response, data }) => {
+            if (handleUnauthorized(response, data)) return;
+            if (response.status === 200) {
+              showSuccess("membership renewed");
+              loadExpired();
+            } else {
+              showError(data.message || "could not renew!");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            showError("could not reach the server!");
+          });
+      }
+
+      getUser().then((user) => {
+        renderNav(user);
+        loadExpired();
+      });
+    </script>
+  </body>
+</html>

@@ -1,10 +1,12 @@
 {
   "name": "ashutosh_pawar_150096725130",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Gym and fitness club management API with MongoDB, Mongoose and Passport session auth",
+  "main": "src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "cd src && node server.js",
+    "dev": "cd src && nodemon server.js",
+    "make-admin": "node src/makeAdmin.js"
   },
   "keywords": [],
   "author": "",

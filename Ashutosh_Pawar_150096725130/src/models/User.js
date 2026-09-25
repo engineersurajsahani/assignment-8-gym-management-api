@@ -35,5 +35,38 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+userSchema.virtual("remainingDays").get(function () {
+  if (!this.membershipExpiryDate) return undefined;
+  const diff = this.membershipExpiryDate.getTime() - Date.now();
+  return diff > 0 ? Math.ceil(diff / DAY_MS) : 0;
+});
+
+userSchema.methods.isExpired = function () {
+  return this.membershipExpiryDate.getTime() < Date.now();
+};
+
+userSchema.methods.extendMembership = function (months) {
+  const base = this.isExpired() ? Date.now() : this.membershipExpiryDate.getTime();
+  this.membershipExpiryDate = new Date(base + months * 30 * DAY_MS);
+  this.membershipStatus = "active";
+};
+
+userSchema.pre("save", function () {
+  if (this.membershipStatus === "active" && this.isExpired()) {
+    this.membershipStatus = "expired";
+  }
+});
+
+userSchema.set("toJSON", {
+  virtuals: true,
+  transform: (doc, ret) => {
+    delete ret.password;
+    delete ret.__v;
+    return ret;
+  },
+});
+
 const User = mongoose.model("User", userSchema);
 module.exports = User;
