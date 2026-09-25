@@ -4,6 +4,21 @@ REST API for a gym. MongoDB with Mongoose for storage, Passport Local with
 express-session for login, bcrypt for passwords. A plain HTML frontend in
 `public/` is served by the same server.
 
+## Live demo
+
+https://assignment-8-gym-management-api-t9g6.onrender.com
+
+The UI and the API run as one Render web service on the free tier, with the
+data in MongoDB Atlas. The first visit after a period of inactivity can take
+up to a minute while the server wakes up, and since sessions are kept in
+memory a restart logs everyone out.
+
+Deployed with root directory `Ashutosh_Pawar_150096725130`, build
+`npm install`, start `npm start`, and `MONGOOSE_URI` (Atlas connection string)
+plus `SESSION_SECRET` set in the Render environment. Render provides `PORT`.
+On the deployed database an admin is made by editing the user's `role` to
+`"admin"` in Atlas (Browse Collections → `users`).
+
 ## Setup
 
 ```bash
@@ -13,7 +28,7 @@ npm run dev
 ```
 
 - API: `http://localhost:3000/api/...`
-- Frontend: `http://localhost:3000/index.html`
+- Frontend: `http://localhost:3000`
 - Requests to try: `src/test.http`
 
 ### Making an admin
