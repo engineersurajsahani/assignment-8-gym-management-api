@@ -22,7 +22,7 @@ app.use(express.json());
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'gym_management_default_secret_key',
     resave: false,
     saveUninitialized: false
   })
